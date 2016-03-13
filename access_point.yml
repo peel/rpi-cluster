@@ -44,7 +44,7 @@
       with_items:
         - { template: hostname.j2, dest: /etc/hostname }
         - { template: hosts.j2, dest: /etc/hosts }
-        - { template: dhcpcd.conf.j2, dest: /etc/dhcp/dhcpd.conf }
+        - { template: dhcpd.conf.j2, dest: /etc/dhcp/dhcpd.conf }
         - { template: isc-dhcp-server.conf.j2, dest: /etc/default/isc-dhcp-server.conf }
         - { template: hostapd.conf.j2, dest: /etc/hostapd/hostapd.conf }
         - { template: hostapd.j2, dest: /etc/default/hostapd }
