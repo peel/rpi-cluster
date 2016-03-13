@@ -15,7 +15,7 @@ mac_address_mapping:
     name: gate1.codearsonist.com
     ip: "192.168.0.22"
   # RPi3#1 over WLAN - Worker
-  "":
+  "b8:27:eb:7d:b1:c7":
     name: hell1.codearsonist.com
     ip: "10.0.1.61"
   # RPi3#2 over WLAN - Worker
