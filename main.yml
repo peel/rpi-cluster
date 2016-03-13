@@ -1,0 +1,3 @@
+---
+- include: access_point.yml
+- include: cluster.yml

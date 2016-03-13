@@ -1,0 +1,50 @@
+---
+- hosts: pis
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Set the current MAC address for wlan0.
+      set_fact:
+        cluster_mac_address: "{{ hostvars[inventory_hostname].ansible_wlan0_ipv4.macaddress }}"
+
+    - name: Set variables based on eth0 MAC address.
+      set_fact:
+        cluster_hostname: "{{ mac_address_mapping[cluster_mac_address].name }}"
+        cluster_ip_address: "{{ mac_address_mapping[cluster_mac_address].ip }}"
+
+    - name: Set up networking-related files.
+      template:
+        src: "templates/{{ item.template }}"
+        dest: "{{ item.dest }}"
+        mode: 0644
+      with_items:
+        - { template: hostname.j2, dest: /etc/hostname }
+        - { template: hosts.j2, dest: /etc/hosts }
+        - { template: interfaces.j2, dest: /etc/network/interfaces }
+        - { template: wpa_supplicant.conf.j2, dest: /etc/wpa_supplicant/wpa_supplicant.conf }
+        - { template: resolv.conf.j2, dest: /etc/resolv.conf }
+        - { template: dhcpcd.conf.j2, dest: /etc/dhcpcd.conf }
+      notify:
+        - update hostname
+        - delete dhcp leases
+
+  handlers:
+    - name: update hostname
+      command: "hostname {{ cluster_hostname }}"
+
+    - name: restart wireless interface
+      command: "{{ item }} wlan0"
+      with_items:
+        - ifdown
+        - ifup
+
+    - name: delete dhcp leases
+      file:
+        path: /var/lib/dhcp/dhclient.leases
+        state: absent
+      with_items:
+        - /var/lib/dhcp/dhclient.leases
+        - /var/lib/dhcpcd5/dhcpcd-eth0.lease

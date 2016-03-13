@@ -1,0 +1,22 @@
+auto lo
+iface lo inet loopback
+
+
+auto {{client_interface}}
+# TODO: add eth0 config when wlan1 enabled as client
+# allow-hotplug eth0
+# iface eth0 inet manual
+iface {{client_interface}} inet static
+  address {{ cluster_ext_ip_address }}/24
+  netmask 255.255.255.0
+  dns-nameservers {{ dns_nameservers | join(' ') }}
+
+allow-hotplug {{host_interface}} 
+iface {{host_interface}} inet static
+  address {{ cluster_ip_address }}/24
+  netmask 255.255.255.0
+  dns-nameservers {{ dns_nameservers | join(' ') }}
+
+wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+
+up iptables-restore < /etc/iptables.ipv4.nat

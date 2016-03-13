@@ -1,0 +1,87 @@
+---
+- hosts: aps
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Set the current MAC address for wlan0.
+      set_fact:
+        cluster_mac_address: "{{ hostvars[inventory_hostname].ansible_{{host_interface}}_ipv4.macaddress }}"
+        #TODO: cluster_ext_mac_address: "{{ hostvars[inventory_hostname].ansible_{{client_interface}}_ipv4.macaddress }}"
+
+    - name: Set variables based on wlan0 MAC address.
+      set_fact:
+        # TODO: cluster_ext_ip_address: "{{ mac_address_mapping[cluster_ext_mac_address].ip }}"
+        cluster_hostname: "{{ mac_address_mapping[cluster_mac_address].name }}"
+        cluster_ip_address: "{{ mac_address_mapping[cluster_mac_address].ip }}"
+
+    - name: Install isc-dhcp-server, hostapd
+      apt: pkg={{ item }}
+        state=installed
+      with_items:
+        - iptables-persistent
+        - hostapd
+        - isc-dhcp-server
+
+    - name: Remove hostapd and apply EDIMAX patch
+      file: path=/usr/sbin/hostapd state=absent
+    - unarchive: src=http://dl.dropbox.com/u/1663660/hostapd/hostapd.zip dest=/usr/local/bin copy=no
+    - file: path=/usr/sbin/hostapd owner=root group=root mode=0755
+
+    - name: Configure NAT
+      lineinfile: dest=/etc/sysctl.conf line="net.ipv4.ip_forward=1"
+      notify:
+        - reload sysctl
+      
+    - name: Set up networking-related files
+      template:
+        src: "templates/{{ item.template }}"
+        dest: "{{ item.dest }}"
+        mode: 0644
+      with_items:
+        - { template: hostname.j2, dest: /etc/hostname }
+        - { template: hosts.j2, dest: /etc/hosts }
+        - { template: dhcpcd.conf.j2, dest: /etc/dhcp/dhcpd.conf }
+        - { template: isc-dhcp-server.conf.j2, dest: /etc/default/isc-dhcp-server.conf }
+        - { template: hostapd.conf.j2, dest: /etc/hostapd/hostapd.conf }
+        - { template: hostapd.j2, dest: /etc/default/hostapd }
+        - { template: interfaces_ap.j2, dest: /etc/network/interfaces }
+        - { template: wpa_supplicant_ap.conf.j2, dest: /etc/wpa_supplicant/wpa_supplicant.conf }
+        - { template: iptables.j2, dest: /etc/iptables.ipv4.nat }
+        - { template: resolv.conf.j2, dest: /etc/resolv.conf }
+      notify:
+        - update hostname
+        - delete dhcp leases
+        - restart hostapd
+        - restart iptables-persistent
+        - restart wireless interface
+
+  handlers:
+    - name: update hostname
+      command: "hostname {{ cluster_hostname }}"
+
+    - name: reload sysctl
+      command: sudo sysctl -p
+
+    - name: restart hostapd
+      service: name=hostapd state=restarted
+
+    # TODO: support WLAN client
+    - name: restart wireless interface
+      command: "{{ item[0] }} wlan0"
+      with_nested:
+        - ["ifdown","ifup"]
+        - [client_interface, host_interface]
+      
+    - name: restart iptables-persistent
+      service: name=iptables-persistent state=restarted
+
+    - name: delete dhcp leases
+      file:
+        path: /var/lib/dhcp/dhclient.leases
+        state: absent
+      with_items:
+        - /var/lib/dhcp/dhclient.leases
+        - /var/lib/dhcpcd5/dhcpcd-eth0.lease
