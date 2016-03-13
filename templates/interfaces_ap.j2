@@ -12,8 +12,9 @@ iface {{client_interface}} inet static
 
 allow-hotplug {{host_interface}} 
 iface {{host_interface}} inet static
+  hostapd /etc/hostapd/hostapd.conf
   address {{ cluster_ip_address }}/24
+  netmask 255.255.255.0
   dns-nameservers {{ dns_nameservers | join(' ') }}
-  wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
 
 pre-up iptables-restore < /etc/iptables.ipv4.nat
