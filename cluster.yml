@@ -1,6 +1,7 @@
 ---
 - hosts: pis
   become: yes
+  remote_user: pi
 
   vars_files:
     - vars.yml

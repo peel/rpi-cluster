@@ -37,5 +37,5 @@ ssid: "Brambjeria"
 password: "oYTJZ9eg7GPLiR"
 
 # WLAN client config
-ssid: "{{EXT_WLAN_SSID_HERE}}"
-password: "{{EXT_WLAN_PASSWORD}}"
+client_ssid: "{{EXT_WLAN_SSID_HERE}}"
+client_password: "{{EXT_WLAN_PASSWORD}}"

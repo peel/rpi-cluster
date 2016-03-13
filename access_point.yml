@@ -1,6 +1,7 @@
 ---
 - hosts: aps
   become: yes
+  remote_user: pi
 
   vars_files:
     - vars.yml
@@ -8,12 +9,12 @@
   tasks:
     - name: Set the current MAC address for wlan0.
       set_fact:
-        cluster_mac_address: "{{ hostvars[inventory_hostname].ansible_{{host_interface}}_ipv4.macaddress }}"
-        #TODO: cluster_ext_mac_address: "{{ hostvars[inventory_hostname].ansible_{{client_interface}}_ipv4.macaddress }}"
+        cluster_mac_address: "{{ hostvars[inventory_hostname].ansible_wlan0.macaddress }}"
+        cluster_ext_mac_address: "{{ hostvars[inventory_hostname].ansible_eth0.macaddress }}"
 
     - name: Set variables based on wlan0 MAC address.
       set_fact:
-        # TODO: cluster_ext_ip_address: "{{ mac_address_mapping[cluster_ext_mac_address].ip }}"
+        cluster_ext_ip_address: "{{ mac_address_mapping[cluster_ext_mac_address].ip }}"
         cluster_hostname: "{{ mac_address_mapping[cluster_mac_address].name }}"
         cluster_ip_address: "{{ mac_address_mapping[cluster_mac_address].ip }}"
 
