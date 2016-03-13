@@ -28,7 +28,7 @@
 
     - name: Remove hostapd and apply EDIMAX patch
       file: path=/usr/sbin/hostapd state=absent
-    - unarchive: src=http://dl.dropbox.com/u/1663660/hostapd/hostapd.zip dest=/usr/local/bin copy=no
+    - unarchive: src=http://dl.dropbox.com/u/1663660/hostapd/hostapd.zip dest=/usr/sbin/ copy=no
     - file: path=/usr/sbin/hostapd owner=root group=root mode=0755
 
     - name: Configure NAT
