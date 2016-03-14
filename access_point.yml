@@ -45,18 +45,17 @@
         - { template: hostname.j2, dest: /etc/hostname }
         - { template: hosts.j2, dest: /etc/hosts }
         - { template: dhcpd.conf.j2, dest: /etc/dhcp/dhcpd.conf }
-        - { template: isc-dhcp-server.conf.j2, dest: /etc/default/isc-dhcp-server.conf }
+        - { template: isc-dhcp-server.j2, dest: /etc/default/isc-dhcp-server }
         - { template: hostapd.conf.j2, dest: /etc/hostapd/hostapd.conf }
         - { template: hostapd.j2, dest: /etc/default/hostapd }
         - { template: interfaces_ap.j2, dest: /etc/network/interfaces }
         - { template: wpa_supplicant_ap.conf.j2, dest: /etc/wpa_supplicant/wpa_supplicant.conf }
-        - { template: iptables.j2, dest: /etc/iptables.ipv4.nat }
+        - { template: iptables.j2, dest: /etc/iptables/rules.v4 }
         - { template: resolv.conf.j2, dest: /etc/resolv.conf }
       notify:
         - update hostname
         - delete dhcp leases
         - restart hostapd
-        - restart iptables-persistent
         - restart wireless interface
 
   handlers:
@@ -75,9 +74,6 @@
       with_nested:
         - ["ifdown","ifup"]
         - [client_interface, host_interface]
-      
-    - name: restart iptables-persistent
-      service: name=iptables-persistent state=restarted
 
     - name: delete dhcp leases
       file:

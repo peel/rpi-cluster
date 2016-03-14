@@ -17,4 +17,4 @@ iface {{host_interface}} inet static
   netmask 255.255.255.0
   dns-nameservers {{ dns_nameservers | join(' ') }}
 
-pre-up iptables-restore < /etc/iptables.ipv4.nat
+pre-up iptables-restore < /etc/iptables/rules.v4

@@ -9,7 +9,6 @@ auto wlan0
 iface wlan0 inet static 
   address {{ cluster_ip_address }}/24
   netmask 255.255.255.0
-  gateway 10.0.1.1
   dns-nameservers {{ dns_nameservers | join(' ') }}
 
 wpa_roam /etc/wpa_supplicant/wp_supplicant.conf
