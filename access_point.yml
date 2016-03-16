@@ -5,12 +5,13 @@
 
   vars_files:
     - vars.yml
+    - passwords.yml
 
   tasks:
     - name: Set the current MAC address for wlan0.
       set_fact:
-        cluster_mac_address: "{{ hostvars[inventory_hostname].ansible_wlan0.macaddress }}"
-        cluster_ext_mac_address: "{{ hostvars[inventory_hostname].ansible_eth0.macaddress }}"
+        cluster_mac_address: "{{ hostvars[inventory_hostname].ansible_wlan1.macaddress }}"
+        cluster_ext_mac_address: "{{ hostvars[inventory_hostname].ansible_wlan0.macaddress }}"
 
     - name: Set variables based on wlan0 MAC address.
       set_fact:
@@ -18,24 +19,17 @@
         cluster_hostname: "{{ mac_address_mapping[cluster_mac_address].name }}"
         cluster_ip_address: "{{ mac_address_mapping[cluster_mac_address].ip }}"
 
-    - name: Install isc-dhcp-server, hostapd
+    - name: Install routing stuff
       apt: pkg={{ item }}
         state=installed
       with_items:
         - iptables-persistent
-        - hostapd
-        - isc-dhcp-server
+        - dnsmasq 
 
-    - name: Remove hostapd and apply EDIMAX patch
-      file: path=/usr/sbin/hostapd state=absent
-    - unarchive: src=http://dl.dropbox.com/u/1663660/hostapd/hostapd.zip dest=/usr/sbin/ copy=no
-    - file: path=/usr/sbin/hostapd owner=root group=root mode=0755
+    - unarchive: src=https://github.com/jenssegers/RTL8188-hostapd/archive/v2.0.tar.gz dest=/tmp/ copy=no creates=/tmp/RTL8188-hostapd-2.0
+    - shell: chdir=/tmp/RTL8188-hostapd-2.0/hostapd make && make install creates=/usr/local/bin/hostapd
+      become: sudo 
 
-    - name: Configure NAT
-      lineinfile: dest=/etc/sysctl.conf line="net.ipv4.ip_forward=1"
-      notify:
-        - reload sysctl
-      
     - name: Set up networking-related files
       template:
         src: "templates/{{ item.template }}"
@@ -44,19 +38,28 @@
       with_items:
         - { template: hostname.j2, dest: /etc/hostname }
         - { template: hosts.j2, dest: /etc/hosts }
-        - { template: dhcpd.conf.j2, dest: /etc/dhcp/dhcpd.conf }
-        - { template: isc-dhcp-server.j2, dest: /etc/default/isc-dhcp-server }
+        - { template: dnsmasq.custom.conf.j2, dest: /etc/dnsmasq.d/dnsmasq.custom.conf }
         - { template: hostapd.conf.j2, dest: /etc/hostapd/hostapd.conf }
         - { template: hostapd.j2, dest: /etc/default/hostapd }
         - { template: interfaces_ap.j2, dest: /etc/network/interfaces }
-        - { template: wpa_supplicant_ap.conf.j2, dest: /etc/wpa_supplicant/wpa_supplicant.conf }
         - { template: iptables.j2, dest: /etc/iptables/rules.v4 }
         - { template: resolv.conf.j2, dest: /etc/resolv.conf }
+        - { template: nat.conf.j2, dest: /etc/sysctl.d/nat.conf }
       notify:
         - update hostname
-        - delete dhcp leases
         - restart hostapd
         - restart wireless interface
+        - restart dnsmasq 
+        - delete dhcp leases
+        - reload sysctl
+
+    - name: Re-route log entries with /etc/rsyslog.d
+      template: src=rsyslog-{{ item }}.j2 dest=/etc/rsyslog.d/{{ item }}
+      with_items:
+        - dnsmasq.conf
+        - hostapd.conf
+        - iptables.conf
+      notify: restart rsyslogd
 
   handlers:
     - name: update hostname
@@ -64,21 +67,19 @@
 
     - name: reload sysctl
       command: sudo sysctl -p
+      become: sudo
+
+    - name: restart dnsmasq 
+      service: name=dnsmasq state=restarted
 
     - name: restart hostapd
       service: name=hostapd state=restarted
 
-    # TODO: support WLAN client
     - name: restart wireless interface
-      command: "{{ item[0] }} wlan0"
+      command: "{{ item[0] }} {{ item[1] }}"
       with_nested:
         - ["ifdown","ifup"]
-        - [client_interface, host_interface]
+        - [host_interface]
 
-    - name: delete dhcp leases
-      file:
-        path: /var/lib/dhcp/dhclient.leases
-        state: absent
-      with_items:
-        - /var/lib/dhcp/dhclient.leases
-        - /var/lib/dhcpcd5/dhcpcd-eth0.lease
+    - name: restart rsyslogd
+      service: name=rsyslog state=restarted

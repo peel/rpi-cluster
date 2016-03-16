@@ -5,6 +5,7 @@
 
   vars_files:
     - vars.yml
+    - passwords.yml
 
   tasks:
     - name: Set the current MAC address for wlan0.

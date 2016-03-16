@@ -1,16 +1,23 @@
-interface=wlan0
-driver=rtl871xdrv
+interface={{host_interface}}
 ssid={{ssid}}
-hw_mode=g
 channel=6
 macaddr_acl=0
 auth_algs=1
-ignore_broadcast_ssid=0
 wpa=2
 wpa_passphrase={{password}}
 wpa_key_mgmt=WPA-PSK
-wpa_pairwise=TKIP
-rsn_pairwise=CCMP
-wmm_enabled=1
+wpa_pairwise=CCMP TKIP
+# From Realtek docs
+max_num_sta=8
+# hostapd-rtl specific driver
+driver=rtl871xdrv
+# 2.4 GHz
+hw_mode=g
+# Wifi-N
 ieee80211n=1
-ht_capab=[HT40+][SHORT-GI-40][DSSS_CCK-40][SHORT-GI-20][MAX-AMSDU-7935]
+# QoS support - Can't find out if it's called wme or wmm !!
+wmm_enabled=1
+# from Realtek's docs Quick_Start_Guide_for_SoftAP.pdf and
+# SoftAP_Mode_features.pdf. The [DSSS_CCK-40][MAX-AMSDU-7935]
+# part comes from the interweb. Use [HT40-] or [HT40+]
+ht_capab=[SHORT-GI-20][SHORT-GI-40][HT40+][DSSS_CCK-40][MAX-AMSDU-7935]

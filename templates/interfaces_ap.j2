@@ -1,20 +1,20 @@
 auto lo
 iface lo inet loopback
 
+allow-hotplug eth0
+iface eth0 inet manual
 
+#WLAN0 - CLIENT
 auto {{client_interface}}
-# TODO: add eth0 config when wlan1 enabled as client
-# allow-hotplug eth0
-# iface eth0 inet manual
-iface {{client_interface}} inet static
-  address {{ cluster_ext_ip_address }}/24
-  netmask 255.255.255.0
+iface {{client_interface}} inet dhcp 
+  wpa-ssid {{client_ssid}}
+  wpa-psk  {{client_password}}
 
-allow-hotplug {{host_interface}} 
+#WLAN1 - HOST
+auto {{host_interface}}
 iface {{host_interface}} inet static
   hostapd /etc/hostapd/hostapd.conf
-  address {{ cluster_ip_address }}/24
+  address {{ cluster_ip_address }}
   netmask 255.255.255.0
-  dns-nameservers {{ dns_nameservers | join(' ') }}
 
 pre-up iptables-restore < /etc/iptables/rules.v4

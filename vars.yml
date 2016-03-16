@@ -1,16 +1,19 @@
 ---
 # Network interfaces config
-client_interface: "wlan1"
-host_interface: "wlan0"
+client_interface: "wlan0"
+host_interface: "wlan1"
 
 # Mapping of what hardware MAC addresses should be configured with specific IPs.
 mac_address_mapping:
-  #RPiB+ over WLAN - Access Point (internal network)
+  #RPiB+ over WLAN - Access Point (host interface)
   "80:1f:02:3f:54:39":
     name: gate1.codearsonist.com
     ip: "10.0.1.1"
-    ext_ip: "192.168.0.22"
-  #RPiB+ external network 
+  #RPiB+ over WLAN - Access Point (client interface)
+  "74:da:38:5d:89:5a":
+    name: gate1.codearsonist.com
+    ip: "192.168.0.26"
+  #RPiB+ external network (backup managed interface)
   "b8:27:eb:ff:a8:fc":
     name: gate1.codearsonist.com
     ip: "192.168.0.22"
@@ -29,13 +32,8 @@ mac_address_mapping:
 
 # Nameservers to use in resolv.conf.
 dns_nameservers:
+  - "10.0.1.1"
   - "8.8.8.8"
   - "8.8.4.4"
 
-# WLAN config
-ssid: "Brambjeria"
-password: "oYTJZ9eg7GPLiR"
-
-# WLAN client config
-client_ssid: "{{EXT_WLAN_SSID_HERE}}"
-client_password: "{{EXT_WLAN_PASSWORD}}"
+log_directory: "/var/log/cluster"
