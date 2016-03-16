@@ -1,8 +1,8 @@
 * Raspberry Pi Wireless Cluster
 The project sets up a basic wireless cluster (bramble) based upon Raspberry Pi devices using Ansible.
-* Hardware setup
-** gate - wireless access point & router - hooks into local WiFi network (={{client_ssid}}=), exposes cluster internal WiFi (={{ssid}}=). Based upon Raspberry Pi B+ w/ double Edimax EW-811UN WiFi dongles
-** hellX - worker instances inter-connected wirelessly via internal network (via gate)
+** Hardware setup
+*** gate - wireless access point & router - hooks into local WiFi network (={{client_ssid}}=), exposes cluster internal WiFi (={{ssid}}=). Based upon Raspberry Pi B+ w/ double Edimax EW-811UN WiFi dongles
+*** hellX - worker instances inter-connected wirelessly via internal network (via gate). Based upon Raspberry Pi 3 nodes
 #+BEGIN_SRC
 -> [gate] ->|-> [hell1]
             |-> [hell2]
@@ -10,22 +10,22 @@ The project sets up a basic wireless cluster (bramble) based upon Raspberry Pi d
             |-> [hell4]
             |-> [hell5]
 #+END_SRC
-* Software setup
-** Flash raspbian-based distro of choice (tested with Raspbian Jessie Lite, HyperiotOS 0.7)
-** Connect keyboard, monitor and ethernet cable and boot up the device
-** Run =raspi-config= and configure:
-**** expand_rootfs
-**** change_pass 
-**** change_timezone 
-**** memory_split - 16MB for graphics is good enough 
-**** overclock - (Raspberry Pi B+ only) to Modest
-* Configuration
-** edit =inventory= to reflect CURRENT IP addresses of Pi devices (use ie. Fing for iOS to discover IPs)
-** edit =vars.yml= to reflect network interfaces' MAC adresses.
-** edit passwords: =ansible-vault edit passwords.yml=
-* Running
-** running provisioning for 
-*** All nodes: =ansible-playbook -k -i inventory main.yml --ask-vault-pass=
-*** Access Point nodes: =ansible-playbook -k -i inventory access_point.yml --ask-vault-pass=
-*** Cluster nodes: =ansible-playbook -k -i inventory cluster.yml --ask-vault-pass=
-** reboot Raspberries =ansible pis -i inventory -a "shutdown -r now" -s=
+** Software setup
+*** Flash raspbian-based distro of choice (tested with Raspbian Jessie Lite, HyperiotOS 0.7)
+*** Connect keyboard, monitor and ethernet cable and boot up the device
+*** Run =raspi-config= and configure:
+***** expand_rootfs
+***** change_pass 
+***** change_timezone 
+***** memory_split - 16MB for graphics is good enough 
+***** overclock - (Raspberry Pi B+ only) to Modest
+** Configuration
+*** edit =inventory= to reflect CURRENT IP addresses of Pi devices (use ie. Fing for iOS to discover IPs)
+*** edit =vars.yml= to reflect network interfaces' MAC adresses.
+*** edit passwords: =ansible-vault edit passwords.yml=
+** Running
+*** running provisioning for
+**** All nodes: =ansible-playbook -k -i inventory main.yml --ask-vault-pass=
+**** Access Point nodes: =ansible-playbook -k -i inventory access_point.yml --ask-vault-pass=
+**** Cluster nodes: =ansible-playbook -k -i inventory cluster.yml --ask-vault-pass=
+*** reboot Raspberries =ansible pis -i inventory -a "shutdown -r now" -s=
