@@ -1,16 +1,10 @@
 auto lo
-
 iface lo inet loopback
 
+allow-hotplug eth0
 iface eth0 inet manual 
-
+ 
 allow-hotplug wlan0
-auto wlan0
-iface wlan0 inet static 
-  address {{ cluster_ip_address }}/24
-  netmask 255.255.255.0
-  dns-nameservers {{ dns_nameservers | join(' ') }}
-
-wpa_roam /etc/wpa_supplicant/wp_supplicant.conf
-
+iface wlan0 inet manual
+wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
 iface default inet dhcp

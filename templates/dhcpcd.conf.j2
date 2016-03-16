@@ -3,7 +3,7 @@
 
 interface {{client_interface}} 
 static ip_address={{ cluster_ip_address }}/24
-static routers={{cluster_ip_address}}
+static routers=10.0.1.1
 static domain_name_servers={{ dns_nameservers | join(' ') }}
 
 # Allow users of this group to interact with dhcpcd via the control socket.

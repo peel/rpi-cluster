@@ -10,7 +10,7 @@
   tasks:
     - name: Set the current MAC address for wlan0.
       set_fact:
-        cluster_mac_address: "{{ hostvars[inventory_hostname].ansible_wlan0_ipv4.macaddress }}"
+        cluster_mac_address: "{{ hostvars[inventory_hostname].ansible_wlan0.macaddress }}"
 
     - name: Set variables based on eth0 MAC address.
       set_fact:
@@ -31,7 +31,10 @@
         - { template: dhcpcd.conf.j2, dest: /etc/dhcpcd.conf }
       notify:
         - update hostname
-        - delete dhcp leases
+        - restart wireless interface
+
+    - name: Prevent Wifi from sleeping
+      command: iw dev wlan0 set power_save off
 
   handlers:
     - name: update hostname
@@ -42,11 +45,3 @@
       with_items:
         - ifdown
         - ifup
-
-    - name: delete dhcp leases
-      file:
-        path: /var/lib/dhcp/dhclient.leases
-        state: absent
-      with_items:
-        - /var/lib/dhcp/dhclient.leases
-        - /var/lib/dhcpcd5/dhcpcd-eth0.lease

@@ -19,6 +19,7 @@ The project sets up a basic wireless cluster (bramble) based upon Raspberry Pi d
 ***** change_timezone 
 ***** memory_split - 16MB for graphics is good enough 
 ***** overclock - (Raspberry Pi B+ only) to Modest
+*** Add keys for future passwordless provisioning
 ** Configuration
 *** edit =inventory= to reflect CURRENT IP addresses of Pi devices (use ie. Fing for iOS to discover IPs)
 *** edit =vars.yml= to reflect network interfaces' MAC adresses.
