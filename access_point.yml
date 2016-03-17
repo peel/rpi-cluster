@@ -8,6 +8,14 @@
     - passwords.yml
 
   tasks:
+    - name: Install avahi
+      apt: name={{item}}
+      with_items:
+        - avahi-daemon
+        - avahi-utils
+        - avahi-dnsconfd
+        - libavahi-core-dev
+      
     - name: Set the current MAC address for wlan0.
       set_fact:
         cluster_mac_address: "{{ hostvars[inventory_hostname].ansible_wlan1.macaddress }}"
@@ -43,6 +51,7 @@
         - { template: hostapd.j2, dest: /etc/default/hostapd }
         - { template: interfaces_ap.j2, dest: /etc/network/interfaces }
         - { template: iptables.j2, dest: /etc/iptables/rules.v4 }
+        - { template: multiple.service.j2, dest: /etc/avahi/services/multiple.service }
         - { template: resolv.conf.j2, dest: /etc/resolv.conf }
         - { template: nat.conf.j2, dest: /etc/sysctl.d/nat.conf }
       notify:
@@ -64,6 +73,9 @@
   handlers:
     - name: update hostname
       command: "hostname {{ cluster_hostname }}"
+      
+    - name: avahi-daemon restarted
+      service: name=avahi-daemon state=restarted enabled=yes
 
     - name: reload sysctl
       command: sudo sysctl -p

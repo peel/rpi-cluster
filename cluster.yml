@@ -8,11 +8,19 @@
     - passwords.yml
 
   tasks:
+    - name: Install avahi
+      apt: name={{item}}
+      with_items:
+        - avahi-daemon
+        - avahi-utils
+        - avahi-dnsconfd
+        - libavahi-core-dev
+      
     - name: Set the current MAC address for wlan0.
       set_fact:
         cluster_mac_address: "{{ hostvars[inventory_hostname].ansible_wlan0.macaddress }}"
 
-    - name: Set variables based on eth0 MAC address.
+    - name: Set variables based on wlan0 MAC address.
       set_fact:
         cluster_hostname: "{{ mac_address_mapping[cluster_mac_address].name }}"
         cluster_ip_address: "{{ mac_address_mapping[cluster_mac_address].ip }}"
@@ -28,10 +36,9 @@
         - { template: interfaces.j2, dest: /etc/network/interfaces }
         - { template: wpa_supplicant.conf.j2, dest: /etc/wpa_supplicant/wpa_supplicant.conf }
         - { template: resolv.conf.j2, dest: /etc/resolv.conf }
-        - { template: dhcpcd.conf.j2, dest: /etc/dhcpcd.conf }
+        - { template: multiple.service.j2, dest: /etc/avahi/services/multiple.service }
       notify:
         - update hostname
-        - restart wireless interface
 
     - name: Prevent Wifi from sleeping
       command: iw dev wlan0 set power_save off
@@ -40,8 +47,5 @@
     - name: update hostname
       command: "hostname {{ cluster_hostname }}"
 
-    - name: restart wireless interface
-      command: "{{ item }} wlan0"
-      with_items:
-        - ifdown
-        - ifup
+    - name: avahi-daemon restarted
+      service: name=avahi-daemon state=restarted enabled=yes
