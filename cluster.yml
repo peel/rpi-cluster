@@ -8,7 +8,10 @@
     - passwords.yml
 
   tasks:
-    - name: Install avahi
+    - name: Configure ssh keys for root user
+      authorized_key: user=root key=https://github.com/{{github_user}}.keys
+
+    - name: Install Zeroconf-related packages for easy network discovery w/o static IP
       apt: name={{item}}
       with_items:
         - avahi-daemon

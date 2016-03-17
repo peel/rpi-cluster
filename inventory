@@ -1,14 +1,10 @@
 [aps]
 192.168.0.30
-# gate1.local
 
 [pis]
 192.168.0.23
 192.168.0.24
 192.168.0.25
-# hell1.local
-# hell2.local 
-# hell3.local 
 
 [pis:vars]
 ansible_ssh_user=pi
