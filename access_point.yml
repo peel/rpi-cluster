@@ -15,6 +15,7 @@
         - avahi-utils
         - avahi-dnsconfd
         - libavahi-core-dev
+        - netatalk
       
     - name: Set the current MAC address for wlan0.
       set_fact:
