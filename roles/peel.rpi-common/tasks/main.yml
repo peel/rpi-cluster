@@ -1,0 +1,39 @@
+---
+- name: Configure ssh keys for root user
+  authorized_key: user=root key=https://github.com/{{github_user}}.keys
+
+- name: Set up hostname files
+  template:
+    src: "hostname.j2"
+    dest: "/etc/hostname"
+    mode: 0644
+  notify:
+    - update hostname
+
+- name: Install Zeroconf-related packages for easy network discovery w/o static IP
+  apt: name={{item}}
+  with_items:
+    - avahi-daemon
+    - avahi-utils
+    - avahi-dnsconfd
+    - libavahi-core-dev
+    - netatalk
+
+- name: Set up avahi config files
+  template:
+    src: "multiple.service.j2"
+    dest: "/etc/avahi/services/multiple.service"
+    mode: 0644
+  notify:
+    - avahi-daemon restarted 
+
+- name: Set up networking-related files.
+  template:
+    src: "templates/{{ item.template }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  with_items:
+    - { template: resolv.conf.j2, dest: /etc/resolv.conf }
+
+- name: Prevent Wifi from sleeping
+  command: iw dev wlan0 set power_save off

@@ -1,0 +1,6 @@
+---
+- name: avahi-daemon restarted
+  service: name=avahi-daemon state=restarted enabled=yes
+
+- name: update hostname
+  command: "hostname {{ cluster_hostname }}"

@@ -1,0 +1,12 @@
+---
+- name: Set up network interfaces config
+  template:
+    src: "interfaces.j2"
+    dest: "/etc/network/interfaces"
+    mode: 0644
+
+- name: Set up wireless networks
+  template:
+    src: "wpa_supplicant.conf.j2"
+    dest: "/etc/wpa_supplicant/wpa_supplicant.conf"
+    mode: 0644

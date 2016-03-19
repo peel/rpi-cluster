@@ -7,49 +7,16 @@
     - vars.yml
     - passwords.yml
 
-  tasks:
-    - name: Configure ssh keys for root user
-      authorized_key: user=root key=https://github.com/{{github_user}}.keys
-
-    - name: Install Zeroconf-related packages for easy network discovery w/o static IP
-      apt: name={{item}}
-      with_items:
-        - avahi-daemon
-        - avahi-utils
-        - avahi-dnsconfd
-        - libavahi-core-dev
-        - netatalk
-      
+  pre_tasks:
     - name: Set the current MAC address for wlan0.
       set_fact:
-        cluster_mac_address: "{{ hostvars[inventory_hostname].ansible_wlan0.macaddress }}"
+        mac_address: "{{ hostvars[inventory_hostname].ansible_wlan0.macaddress }}"
 
     - name: Set variables based on wlan0 MAC address.
       set_fact:
-        cluster_hostname: "{{ mac_address_mapping[cluster_mac_address].name }}"
-        cluster_ip_address: "{{ mac_address_mapping[cluster_mac_address].ip }}"
+        hostname: "{{ mac_address_mapping[cluster_mac_address].name }}"
+        ip_address: "{{ mac_address_mapping[cluster_mac_address].ip }}"
 
-    - name: Set up networking-related files.
-      template:
-        src: "templates/{{ item.template }}"
-        dest: "{{ item.dest }}"
-        mode: 0644
-      with_items:
-        - { template: hostname.j2, dest: /etc/hostname }
-        - { template: hosts.j2, dest: /etc/hosts }
-        - { template: interfaces.j2, dest: /etc/network/interfaces }
-        - { template: wpa_supplicant.conf.j2, dest: /etc/wpa_supplicant/wpa_supplicant.conf }
-        - { template: resolv.conf.j2, dest: /etc/resolv.conf }
-        - { template: multiple.service.j2, dest: /etc/avahi/services/multiple.service }
-      notify:
-        - update hostname
-
-    - name: Prevent Wifi from sleeping
-      command: iw dev wlan0 set power_save off
-
-  handlers:
-    - name: update hostname
-      command: "hostname {{ cluster_hostname }}"
-
-    - name: avahi-daemon restarted
-      service: name=avahi-daemon state=restarted enabled=yes
+  roles:
+    - { role: peel.rpi-common }
+    - { role: peel.rpi-wlan-client, client_interface: "wlan0" }
