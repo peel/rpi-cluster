@@ -14,7 +14,7 @@ iface {{client_interface}} inet dhcp
 auto {{host_interface}}
 iface {{host_interface}} inet static
   hostapd /etc/hostapd/hostapd.conf
-  address {{ cluster_ip_address }}
+  address {{ ip_address }}
   netmask 255.255.255.0
 
 pre-up iptables-restore < /etc/iptables/rules.v4

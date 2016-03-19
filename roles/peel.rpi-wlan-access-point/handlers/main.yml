@@ -1,0 +1,19 @@
+---
+- name: restart rsyslogd
+  service: name=rsyslog state=restarted
+
+- name: reload sysctl
+  command: sudo sysctl -p
+  become: sudo
+
+- name: restart dnsmasq 
+  service: name=dnsmasq state=restarted
+
+- name: restart hostapd
+  service: name=hostapd state=restarted
+
+- name: restart wireless interface
+  command: "{{ item[0] }} {{ item[1] }}"
+  with_nested:
+    - ["ifdown","ifup"]
+    - [host_interface]

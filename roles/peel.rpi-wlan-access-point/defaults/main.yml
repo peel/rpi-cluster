@@ -1,0 +1,4 @@
+---
+log_directory: "/var/log/cluster"
+client_interface: "wlan0"
+host_interface: "wlan1"

@@ -7,95 +7,18 @@
     - vars.yml
     - passwords.yml
 
-  tasks:
-    - name: Configure ssh keys for root user
-      authorized_key: user=root key=https://github.com/{{github_user}}.keys
-
-    - name: Install Zeroconf-related packages for easy network discovery w/o static IP
-      apt: name={{item}}
-      with_items:
-        - avahi-daemon
-        - avahi-utils
-        - avahi-dnsconfd
-        - libavahi-core-dev
-        - netatalk
-      
+  pre_tasks:
     - name: Set the current MAC address for wlan0.
       set_fact:
-        cluster_mac_address: "{{ hostvars[inventory_hostname].ansible_wlan1.macaddress }}"
-        cluster_ext_mac_address: "{{ hostvars[inventory_hostname].ansible_wlan0.macaddress }}"
+        mac_address: "{{ hostvars[inventory_hostname].ansible_wlan1.macaddress }}"
+        ext_mac_address: "{{ hostvars[inventory_hostname].ansible_wlan0.macaddress }}"
 
     - name: Set variables based on wlan0 MAC address.
       set_fact:
-        cluster_ext_ip_address: "{{ mac_address_mapping[cluster_ext_mac_address].ip }}"
-        cluster_hostname: "{{ mac_address_mapping[cluster_mac_address].name }}"
-        cluster_ip_address: "{{ mac_address_mapping[cluster_mac_address].ip }}"
+        ext_ip_address: "{{ mac_address_mapping[ext_mac_address].ip }}"
+        hostname: "{{ mac_address_mapping[mac_address].name }}"
+        ip_address: "{{ mac_address_mapping[mac_address].ip }}"
 
-    - name: Install routing stuff
-      apt: pkg={{ item }}
-        state=installed
-      with_items:
-        - iptables-persistent
-        - dnsmasq 
-
-    - unarchive: src=https://github.com/jenssegers/RTL8188-hostapd/archive/v2.0.tar.gz dest=/tmp/ copy=no creates=/tmp/RTL8188-hostapd-2.0
-    - shell: chdir=/tmp/RTL8188-hostapd-2.0/hostapd make && make install creates=/usr/local/bin/hostapd
-      become: sudo 
-
-    - name: Set up networking-related files
-      template:
-        src: "templates/{{ item.template }}"
-        dest: "{{ item.dest }}"
-        mode: 0644
-      with_items:
-        - { template: hostname.j2, dest: /etc/hostname }
-        - { template: hosts.j2, dest: /etc/hosts }
-        - { template: dnsmasq.custom.conf.j2, dest: /etc/dnsmasq.d/dnsmasq.custom.conf }
-        - { template: hostapd.conf.j2, dest: /etc/hostapd/hostapd.conf }
-        - { template: hostapd.j2, dest: /etc/default/hostapd }
-        - { template: interfaces_ap.j2, dest: /etc/network/interfaces }
-        - { template: iptables.j2, dest: /etc/iptables/rules.v4 }
-        - { template: multiple.service.j2, dest: /etc/avahi/services/multiple.service }
-        - { template: resolv.conf.j2, dest: /etc/resolv.conf }
-        - { template: nat.conf.j2, dest: /etc/sysctl.d/nat.conf }
-      notify:
-        - update hostname
-        - restart hostapd
-        - restart wireless interface
-        - restart dnsmasq 
-        - delete dhcp leases
-        - reload sysctl
-
-    - name: Re-route log entries with /etc/rsyslog.d
-      template: src=rsyslog-{{ item }}.j2 dest=/etc/rsyslog.d/{{ item }}
-      with_items:
-        - dnsmasq.conf
-        - hostapd.conf
-        - iptables.conf
-      notify: restart rsyslogd
-
-  handlers:
-    - name: update hostname
-      command: "hostname {{ cluster_hostname }}"
-      
-    - name: avahi-daemon restarted
-      service: name=avahi-daemon state=restarted enabled=yes
-
-    - name: reload sysctl
-      command: sudo sysctl -p
-      become: sudo
-
-    - name: restart dnsmasq 
-      service: name=dnsmasq state=restarted
-
-    - name: restart hostapd
-      service: name=hostapd state=restarted
-
-    - name: restart wireless interface
-      command: "{{ item[0] }} {{ item[1] }}"
-      with_nested:
-        - ["ifdown","ifup"]
-        - [host_interface]
-
-    - name: restart rsyslogd
-      service: name=rsyslog state=restarted
+  roles:
+    - { role: peel.rpi-common }
+    - { role: peel.rpi-wlan-access-point }

@@ -10,3 +10,6 @@
     src: "wpa_supplicant.conf.j2"
     dest: "/etc/wpa_supplicant/wpa_supplicant.conf"
     mode: 0644
+
+- name: Prevent Wifi from sleeping
+  command: iw dev wlan0 set power_save off

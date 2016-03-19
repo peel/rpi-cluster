@@ -1,2 +1,4 @@
 ---
-# defaults file for peel.rpi-common
+dns_nameservers:
+  - "8.8.8.8"
+  - "8.8.4.4"

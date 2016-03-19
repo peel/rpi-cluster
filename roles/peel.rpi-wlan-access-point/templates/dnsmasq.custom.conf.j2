@@ -1,10 +1,10 @@
-interface={{ host_interface }}
+interface={{host_interface}}
 
 dhcp-range={{host_interface}},10.0.1.10,10.0.1.200,255.255.255.0,30m
 
-dhcp-option=3,{{cluster_ip_address}} # pi-router
+dhcp-option=3,{{ip_address}} # pi-router
 
-dhcp-option=6,{{cluster_ip_address}} # pi-DNS Server
+dhcp-option=6,{{ip_address}} # pi-DNS Server
 
 dhcp-authoritative # force clients to grab a new IP
 

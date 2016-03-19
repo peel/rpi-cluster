@@ -1,0 +1,38 @@
+---
+- name: Install routing stuff
+  apt: pkg={{ item }}
+    state=installed
+  with_items:
+    - iptables-persistent
+    - dnsmasq 
+
+- unarchive: src=https://github.com/jenssegers/RTL8188-hostapd/archive/v2.0.tar.gz dest=/tmp/ copy=no creates=/tmp/RTL8188-hostapd-2.0
+- shell: chdir=/tmp/RTL8188-hostapd-2.0/hostapd make && make install creates=/usr/local/bin/hostapd
+  become: sudo 
+
+- name: Set up networking-related files
+  template:
+    src: "templates/{{ item.template }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  with_items:
+    - { template: dnsmasq.custom.conf.j2, dest: /etc/dnsmasq.d/dnsmasq.custom.conf }
+    - { template: hostapd.conf.j2, dest: /etc/hostapd/hostapd.conf }
+    - { template: hostapd.j2, dest: /etc/default/hostapd }
+    - { template: interfaces.j2, dest: /etc/network/interfaces }
+    - { template: iptables.j2, dest: /etc/iptables/rules.v4 }
+    - { template: nat.conf.j2, dest: /etc/sysctl.d/nat.conf }
+  notify:
+    - restart hostapd
+    - restart wireless interface
+    - restart dnsmasq 
+    - delete dhcp leases
+    - reload sysctl
+  
+- name: Re-route log entries with /etc/rsyslog.d
+  template: src=rsyslog-{{ item }}.j2 dest=/etc/rsyslog.d/{{ item }}
+  with_items:
+    - dnsmasq.conf
+    - hostapd.conf
+    - iptables.conf
+  notify: restart rsyslogd

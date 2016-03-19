@@ -30,12 +30,9 @@ mac_address_mapping:
     name: hell3.codearsonist.com
     ip: "10.0.1.65"
 
-# Nameservers to use in resolv.conf.
 dns_nameservers:
   - "10.0.1.1"
   - "8.8.8.8"
   - "8.8.4.4"
-
-log_directory: "/var/log/cluster"
 
 github_user: peel

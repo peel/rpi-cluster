@@ -14,9 +14,9 @@
 
     - name: Set variables based on wlan0 MAC address.
       set_fact:
-        hostname: "{{ mac_address_mapping[cluster_mac_address].name }}"
-        ip_address: "{{ mac_address_mapping[cluster_mac_address].ip }}"
+        hostname: "{{ mac_address_mapping[mac_address].name }}"
+        ip_address: "{{ mac_address_mapping[mac_address].ip }}"
 
   roles:
     - { role: peel.rpi-common }
-    - { role: peel.rpi-wlan-client, client_interface: "wlan0" }
+    - { role: peel.rpi-wlan-client }
