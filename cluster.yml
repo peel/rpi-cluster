@@ -20,3 +20,4 @@
   roles:
     - { role: peel.rpi-common }
     - { role: peel.rpi-wlan-client }
+    - { role: peel.rpi-docker }

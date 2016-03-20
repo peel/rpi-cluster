@@ -1,0 +1,10 @@
+---
+- lineinfile: dest=/etc/modules line="overlay"
+- apt_key: url=https://packagecloud.io/gpg.key state=present
+- apt_repository: repo='deb https://packagecloud.io/Hypriot/Schatzkiste/debian/ wheezy main' state=present
+- apt: name={{item}} state=present update_cache=yes
+  with_items:
+    - apt-transport-https
+    - docker-hyperiot
+- service: name=docker state=present
+- 
