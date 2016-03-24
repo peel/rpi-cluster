@@ -7,4 +7,4 @@
 192.168.0.25
 
 [pis:vars]
-ansible_ssh_user=pi
+ansible_ssh_user=alarm

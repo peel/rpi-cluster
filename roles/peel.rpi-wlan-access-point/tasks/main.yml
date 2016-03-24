@@ -1,9 +1,16 @@
 ---
+- name: Update packages
+  apt: update_cache=yes
+  when: ansible_os_family == "Debian"
+
+- name: Update packages
+  pacman: update_cache=yes
+  when: ansible_os_family == "Archlinux"
+
 - name: Install routing stuff
-  apt: pkg={{ item }}
+  package: pkg={{ item }}
     state=installed
   with_items:
-    - iptables-persistent
     - dnsmasq 
 
 - unarchive: src=https://github.com/jenssegers/RTL8188-hostapd/archive/v2.0.tar.gz dest=/tmp/ copy=no creates=/tmp/RTL8188-hostapd-2.0

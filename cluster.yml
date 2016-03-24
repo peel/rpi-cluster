@@ -1,7 +1,8 @@
 ---
 - hosts: pis
   become: yes
-  remote_user: pi
+  become_method: su
+  remote_user: alarm
 
   vars_files:
     - vars.yml
@@ -19,4 +20,4 @@
 
   roles:
     - { role: peel.rpi-common }
-    - { role: peel.rpi-wlan-client }
+    - { role: peel.rpi-wlan-client, tags: [arch] }

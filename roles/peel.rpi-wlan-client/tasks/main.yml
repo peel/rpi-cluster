@@ -1,9 +1,24 @@
 ---
+- name: Install wlan management pack 
+  package: name={{item}} state=latest
+  with_items:
+    - netctl
+    - wpa_actiond
+  when: ansible_os_family == "Archlinux"
+
 - name: Set up network interfaces config
   template:
     src: "interfaces.j2"
     dest: "/etc/network/interfaces"
     mode: 0644
+  when: ansible_os_family == "Debian"
+
+- name: Set up network interfaces config
+  template:
+    src: "wlan.j2"
+    dest: "/etc/netctl/{{client_interface}}-{{ssid}}"
+    mode: 0644
+  when: ansible_os_family == "Archlinux"
 
 - name: Set up wireless networks
   template:
@@ -13,3 +28,7 @@
 
 - name: Prevent Wifi from sleeping
   command: iw dev wlan0 set power_save off
+
+- name: Connect to Wifi automatically
+  service: name=netctl-auto@wlan0 state=started enabled=yes
+  when: ansible_os_family == "Archlinux"
