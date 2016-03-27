@@ -20,4 +20,5 @@
 
   roles:
     - { role: peel.rpi-common }
-    - { role: peel.rpi-wlan-client, tags: [arch] }
+    - { role: peel.rpi-wlan-client }
+    - { role: peel.rpi-docker, type: "agent" }

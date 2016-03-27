@@ -27,7 +27,7 @@
     mode: 0644
 
 - name: Prevent Wifi from sleeping
-  command: iw dev wlan0 set power_save off
+  command: iwconfig dev wlan0 set power_save off
 
 - name: Connect to Wifi automatically
   service: name=netctl-auto@wlan0 state=started enabled=yes
