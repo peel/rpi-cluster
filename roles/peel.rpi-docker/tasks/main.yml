@@ -1,6 +1,6 @@
 ---
 - name: Install docker
-  pacman: name=docker state=latest update_cahce=yes
+  pacman: name=docker state=latest
   notify:
     - start docker
 
@@ -34,7 +34,7 @@
 
 - name: Run swarm nodes
   docker:
-    name: {{hostname}}
+    name: "{{hostname}}"
     image: hyperiot/rpi-swarm
     command: "join --advertise {{hostname}}.local:2375 consul://10.0.1.1:8500"
     pull: missing

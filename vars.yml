@@ -31,7 +31,6 @@ mac_address_mapping:
     ip: "10.0.1.65"
 
 dns_nameservers:
-  - "10.0.1.1"
   - "8.8.8.8"
   - "8.8.4.4"
 

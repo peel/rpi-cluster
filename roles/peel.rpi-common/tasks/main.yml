@@ -5,11 +5,11 @@
 - name: Set up hostname files
   command: hostnamectl set-hostname {{ hostname }}
 
-- name: Set up network interfaces config
+- name: Upgrade packages
   apt: update_cache=yes upgrade=yes
   when: ansible_os_family == "Debian"
 
-- name: Set up network interfaces config
+- name: Upgrade packages
   pacman: update_cache=yes upgrade=yes
   when: ansible_os_family == "Archlinux"
 

@@ -1,7 +1,8 @@
 ---
 - hosts: aps
   become: yes
-  remote_user: pi
+  become_method: su
+  remote_user: alarm
 
   vars_files:
     - vars.yml
