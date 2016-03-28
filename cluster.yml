@@ -21,4 +21,4 @@
   roles:
     - { role: peel.rpi-common }
     - { role: peel.rpi-wlan-client }
-    - { role: peel.rpi-docker, type: "agent" }
+    - { role: peel.rpi-docker, type: "agent", hostname: hostname }

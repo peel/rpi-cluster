@@ -23,4 +23,4 @@
   roles:
     - { role: peel.rpi-common }
     - { role: peel.rpi-wlan-access-point }
-    - { role: peel.rpi-docker, type: "manager" }
+    - { role: peel.rpi-docker, type: "manager", hostname: hostname }
