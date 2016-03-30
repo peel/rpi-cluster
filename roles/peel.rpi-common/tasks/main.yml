@@ -2,6 +2,14 @@
 - name: Configure ssh keys for root user
   authorized_key: user=root key=https://github.com/{{github_user}}.keys
 
+# Source: http://forum.odroid.com/viewtopic.php?f=112&t=8075
+- name: Copy resize FS
+  copy: src=resizefs dest=/usr/local/bin/resizefs mode=0755 owner=root group=root
+
+- name: Resize partition
+  command: /usr/local/bin/resizefs
+  become_user: root
+
 - name: Set up hostname files
   command: hostnamectl set-hostname {{ hostname }}
 

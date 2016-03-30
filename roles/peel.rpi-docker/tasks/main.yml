@@ -32,14 +32,14 @@
     state: started
   when: type == "manager"
 
-- name: Run swarm nodes
-  docker:
-    name: "{{hostname}}"
-    image: hyperiot/rpi-swarm
-    command: "join --advertise {{hostname}}.local:2375 consul://10.0.1.1:8500"
-    pull: missing
-    detach: yes
-    restart_policy: always
-    restart_policy_retry: 0
-    state: started  
-  when: type == "agent"
+# - name: Run swarm nodes
+#   docker:
+#     name: "{{hostname}}"
+#     image: hyperiot/rpi-swarm
+#     command: "join --advertise {{hostname}}.local:2375 consul://10.0.1.1:8500"
+#     pull: missing
+#     detach: yes
+#     restart_policy: always
+#     restart_policy_retry: 0
+#     state: started  
+#   when: type == "agent"
