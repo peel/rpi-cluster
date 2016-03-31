@@ -3,6 +3,7 @@
   package: name={{item}} state=latest
   with_items:
     - netctl
+    - wireless_tools
     - wpa_actiond
   when: ansible_os_family == "Archlinux"
 
