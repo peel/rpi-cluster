@@ -6,9 +6,9 @@
 - name: Copy resize FS
   copy: src=resizefs dest=/usr/local/bin/resizefs mode=0755 owner=root group=root
 
-- name: Resize partition
-  command: /usr/local/bin/resizefs
-  become_user: root
+# - name: Resize partition
+#   command: /usr/local/bin/resizefs
+#   become_user: root
 
 - name: Set up hostname files
   command: hostnamectl set-hostname {{ hostname }}
