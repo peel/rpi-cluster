@@ -1,7 +1,6 @@
 ---
 - hosts: managers
   become: yes
-  become_method: su
 
   vars_files:
     - vars.yml
@@ -21,5 +20,6 @@
 
   roles:
     - { role: peel.rpi-common }
+    - { role: peel.rpi-wlan-client, ssid: "{{client_ssid}}", password: "{{client_password}}" }
     - { role: peel.rpi-wlan-access-point }
-    - { role: peel.rpi-docker, type: "manager", hostname: hostname }
+    - { role: peel.rpi-docker, type: "manager", hostname: "{{ hostname }}" }

@@ -8,14 +8,34 @@
   when: ansible_os_family == "Archlinux"
 
 - name: Install routing stuff
-  package: pkg={{ item }}
-    state=installed
+  package: pkg={{ item }} state=installed
   with_items:
-    - dnsmasq 
+    - dnsmasq
+    - hostapd
 
-- unarchive: src=https://github.com/jenssegers/RTL8188-hostapd/archive/v2.0.tar.gz dest=/tmp/ copy=no creates=/tmp/RTL8188-hostapd-2.0
-- shell: chdir=/tmp/RTL8188-hostapd-2.0/hostapd make && make install creates=/usr/local/bin/hostapd
-  become: sudo 
+- name: Install make
+  package: pkg={{item}} state=installed
+  with_items:
+    - make
+    - gcc
+- name: Download hostapd
+  get_url: url=https://github.com/jenssegers/RTL8188-hostapd/archive/v2.0.tar.gz dest=/tmp/hostapd.tar.gz mode=0644
+- command: chdir=/tmp tar xzfv hostapd.tar.gz creates=/tmp/RTL8188-hostapd-2.0
+- shell: chdir=/tmp/RTL8188-hostapd-2.0/hostapd make creates=/usr/local/bin/hostapd
+  become_user: root
+- copy: remote_src=true src=/usr/local/bin/{{item}} dest=/usr/bin/{{item}} owner=root group=root mode=0755
+  with_items:
+    - hostapd
+    - hostapd_cli
+
+- template: src=dnsmasq.conf.j2 dest=/etc/dnsmasq.conf owner=root group=root
+
+- name: Set up network interfaces config
+  template:
+    src: "interfaces.j2"
+    dest: "/etc/network/interfaces"
+    mode: 0644
+  when: ansible_os_family == "Debian"
 
 - name: Set up networking-related files
   template:
@@ -23,19 +43,25 @@
     dest: "{{ item.dest }}"
     mode: 0644
   with_items:
-    - { template: dnsmasq.custom.conf.j2, dest: /etc/dnsmasq.d/dnsmasq.custom.conf }
+    - { template: dnsmasq.conf.j2, dest: /etc/dnsmasq.d/dnsmasq.conf }
     - { template: hostapd.conf.j2, dest: /etc/hostapd/hostapd.conf }
     - { template: hostapd.j2, dest: /etc/default/hostapd }
-    - { template: interfaces.j2, dest: /etc/network/interfaces }
     - { template: iptables.j2, dest: /etc/iptables/rules.v4 }
     - { template: nat.conf.j2, dest: /etc/sysctl.d/nat.conf }
   notify:
     - restart hostapd
-    - restart wireless interface
     - restart dnsmasq 
     - delete dhcp leases
     - reload sysctl
+
+- name: Prevent Wifi from sleeping
+  command: iw dev {{host_interface}} set power_save off
+  when: ansible_os_family == "Debian"
   
+- name: Install rsyslog
+  package: name=rsyslog state=present
+- name: Create rsyslog.d
+  file: state=directory path=/etc/rsyslog.d owner=root group=root
 - name: Re-route log entries with /etc/rsyslog.d
   template: src=rsyslog-{{ item }}.j2 dest=/etc/rsyslog.d/{{ item }}
   with_items:
@@ -43,3 +69,9 @@
     - hostapd.conf
     - iptables.conf
   notify: restart rsyslogd
+
+- name: start dnsmasq 
+  service: name=dnsmasq state=started enabled=yes
+
+- name: restart hostapd
+  service: name=hostapd state=started enabled=yes

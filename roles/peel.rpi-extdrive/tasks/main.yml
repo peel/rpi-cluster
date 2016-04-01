@@ -1,4 +1,3 @@
 ---
-- file: src=resize.sh dest=/usr/local/bin/resize mode=0755
-- filesystem: fstype=ext4 dev=/dev/sda
+- filesystem: fstype=ext4 dev=/dev/sda force=yes resizefs=yes
 - mount: name=/var/lib/docker src=/dev/sda1 fstype=ext4 state=mounted

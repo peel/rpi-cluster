@@ -4,6 +4,13 @@
   notify:
     - start docker
 
+- name: Exclude docker-gc from docker-gc
+  template: src=docker-gc-exclude dest=/etc/docker-gc-exclude group=root owner=root
+
+- file: path=/etc/cron.hourly state=directory group=root owner=root
+- name: Enable docker-gc
+  template: src=docker-gc  dest=/etc/cron.hourly/docker-gc group=root owner=root
+
 # - name: Run consul node
 #   docker:
 #     name: consul

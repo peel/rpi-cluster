@@ -27,11 +27,10 @@
     dest: "/etc/wpa_supplicant/wpa_supplicant.conf"
     mode: 0644
 
-#TODO: Fix for ArchLinux!
 - name: Prevent Wifi from sleeping
-  command: iw dev wlan0 set power_save off
+  command: iw dev {{client_interface}} set power_save off
   when: ansible_os_family == "Debian"
 
 - name: Connect to Wifi automatically
-  service: name=netctl-auto@wlan0 state=started enabled=yes
+  service: name=netctl-auto@{{client_interface}} state=started enabled=yes
   when: ansible_os_family == "Archlinux"
