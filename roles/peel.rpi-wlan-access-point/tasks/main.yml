@@ -50,6 +50,7 @@
     - { template: iptables.j2, dest: /etc/iptables/iptables.rules }
     - { template: nat.conf.j2, dest: /etc/sysctl.d/nat.conf }
   notify:
+    - restart iptables
     - restart wifi-hostapd
     - restart hostapd
     - restart dnsmasq 

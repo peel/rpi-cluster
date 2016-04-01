@@ -1,5 +1,5 @@
 ---
-- hosts: pis
+- hosts: nodes
   become: yes
   become_method: su
 

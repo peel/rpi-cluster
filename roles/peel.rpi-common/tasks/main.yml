@@ -6,9 +6,9 @@
 - name: Copy resize FS
   template: src=resizefs dest=/usr/local/bin/resizefs mode=0755 owner=root group=root
 
-- name: Resize partition
-  command: /usr/local/bin/resizefs
-  become_user: root
+# - name: Resize partition
+#   command: /usr/local/bin/resizefs
+#   become_user: root
 
 - name: Set up hostname files
   command: hostnamectl set-hostname {{ hostname }}
@@ -34,6 +34,9 @@
     mode: 0644
   notify:
     - avahi-daemon restarted 
+
+- name: Enable Avahi
+  service: name=avahi-daemon enabled=yes state=started
 
 - name: Set up networking-related files.
   template:
