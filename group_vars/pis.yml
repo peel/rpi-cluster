@@ -1,3 +1,2 @@
 ---
-device=rpi
-root_partition_id=2
+root_partition_id: 2

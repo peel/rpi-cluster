@@ -2,3 +2,4 @@
 dns_nameservers:
   - "8.8.8.8"
   - "8.8.4.4"
+root_partition_id: 2

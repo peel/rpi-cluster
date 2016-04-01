@@ -21,3 +21,4 @@
     - { role: peel.rpi-common }
     - { role: peel.rpi-wlan-client }
     - { role: peel.rpi-docker, type: "agent", hostname: hostname }
+    - { role: peel.rpi-extdrive }

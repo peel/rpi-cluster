@@ -1,3 +1,2 @@
 ---
-device=odroid
-root_partition_id=1
+root_partition_id: 1
