@@ -2,7 +2,7 @@
 The project sets up a basic wireless cluster (bramble) based upon Raspberry Pi devices using Ansible.
 ** Hardware setup
 *** gate - wireless access point & router - hooks into local WiFi network (={{client_ssid}}=), exposes cluster internal WiFi (={{ssid}}=). Based upon Raspberry Pi B+ w/ double Edimax EW-811UN WiFi dongles
-*** hellX - worker instances inter-connected wirelessly via internal network (via gate). Based upon Raspberry Pi 3 nodes
+*** hellX - worker instances inter-connected wirelessly via internal network (via gate). Based upon Raspberry Pi 3 and Odroid C2 nodes
 #+BEGIN_SRC
 -> [gate] ->|-> [hell1]
             |-> [hell2]
@@ -11,15 +11,8 @@ The project sets up a basic wireless cluster (bramble) based upon Raspberry Pi d
             |-> [hell5]
 #+END_SRC
 ** Software setup
-*** Flash raspbian-based distro of choice (tested with Raspbian Jessie Lite, HyperiotOS 0.7)
-*** Connect keyboard, monitor and ethernet cable and boot up the device
-*** Run =raspi-config= and configure:
-***** expand_rootfs
-***** change_pass 
-***** change_timezone 
-***** memory_split - 16MB for graphics is good enough 
-***** overclock - (Raspberry Pi B+ only) to Modest
-*** Add keys for future passwordless provisioning
+*** Flash linux distro of choice (tested with Raspbian Jessie Lite, *ArchLinuxARM*)
+Install python and wireless_tools (pacman -Syu --noconfirm && pacman -S python2 wireless_tools && ln -s /usr/bin/python2 /usr/bin/python)
 ** Configuration
 *** edit =inventory= to reflect CURRENT IP addresses of Pi devices (use ie. Fing for iOS to discover IPs)
 *** edit =vars.yml= to reflect network interfaces' MAC adresses.

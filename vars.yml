@@ -29,9 +29,16 @@ mac_address_mapping:
   "b8:27:eb:f6:5e:06":
     name: hell3.codearsonist.com
     ip: "10.0.1.65"
+  # OdroidC2#1 over WLAN - Worker
+  "7c:dd:90:ad:64:f9":
+    name: hell4.codearsonist.com
+    ip: "10.0.1.67"
+  # OdroidC2#2 over WLAN - Worker
+  "7c:dd:90:ad:6a:64":
+    name: hell5.codearsonist.com
+    ip: "10.0.1.69"
 
 dns_nameservers:
-  - "10.0.1.1"
   - "8.8.8.8"
   - "8.8.4.4"
 

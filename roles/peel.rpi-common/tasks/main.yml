@@ -2,14 +2,22 @@
 - name: Configure ssh keys for root user
   authorized_key: user=root key=https://github.com/{{github_user}}.keys
 
+# Source: http://forum.odroid.com/viewtopic.php?f=112&t=8075
+- name: Copy resize FS
+  template: src=resizefs dest=/usr/local/bin/resizefs mode=0755 owner=root group=root
+
+# - name: Resize partition
+#   command: /usr/local/bin/resizefs
+#   become_user: root
+
 - name: Set up hostname files
   command: hostnamectl set-hostname {{ hostname }}
 
-- name: Set up network interfaces config
+- name: Upgrade packages
   apt: update_cache=yes upgrade=yes
   when: ansible_os_family == "Debian"
 
-- name: Set up network interfaces config
+- name: Upgrade packages
   pacman: update_cache=yes upgrade=yes
   when: ansible_os_family == "Archlinux"
 

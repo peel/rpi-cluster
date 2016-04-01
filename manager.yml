@@ -1,8 +1,7 @@
 ---
-- hosts: pis
+- hosts: managers
   become: yes
   become_method: su
-  remote_user: alarm
 
   vars_files:
     - vars.yml
@@ -11,13 +10,16 @@
   pre_tasks:
     - name: Set the current MAC address for wlan0.
       set_fact:
-        mac_address: "{{ hostvars[inventory_hostname].ansible_wlan0.macaddress }}"
+        mac_address: "{{ hostvars[inventory_hostname].ansible_wlan1.macaddress }}"
+        ext_mac_address: "{{ hostvars[inventory_hostname].ansible_wlan0.macaddress }}"
 
     - name: Set variables based on wlan0 MAC address.
       set_fact:
+        ext_ip_address: "{{ mac_address_mapping[ext_mac_address].ip }}"
         hostname: "{{ mac_address_mapping[mac_address].name }}"
         ip_address: "{{ mac_address_mapping[mac_address].ip }}"
 
   roles:
     - { role: peel.rpi-common }
-    - { role: peel.rpi-wlan-client, tags: [arch] }
+    - { role: peel.rpi-wlan-access-point }
+    - { role: peel.rpi-docker, type: "manager", hostname: hostname }
