@@ -4,7 +4,7 @@
 
 # Source: http://forum.odroid.com/viewtopic.php?f=112&t=8075
 - name: Copy resize FS
-  copy: src=resizefs dest=/usr/local/bin/resizefs mode=0755 owner=root group=root
+  template: src=resizefs dest=/usr/local/bin/resizefs mode=0755 owner=root group=root
 
 # - name: Resize partition
 #   command: /usr/local/bin/resizefs

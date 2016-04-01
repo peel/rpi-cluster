@@ -1,0 +1,6 @@
+---
+ansible_user=alarm
+ansible_python_interpreter=/usr/bin/python2
+ansible_become=yes
+ansible_become_method=su
+ansible_become_user=root

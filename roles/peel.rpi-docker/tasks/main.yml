@@ -4,33 +4,33 @@
   notify:
     - start docker
 
-- name: Run consul node
-  docker:
-    name: consul
-    image: hyperiot/rpi-consul
-    command: -server -data-dir /data -bootstrap-expect 1 -ui-dir /ui
-    pull: missing
-    detach: yes
-    ports: 8500:8500
-    expose: 8500
-    restart_policy: always
-    restart_policy_retry: 0
-    state: started
-  when: type == "manager"
+# - name: Run consul node
+#   docker:
+#     name: consul
+#     image: hyperiot/rpi-consul
+#     command: -server -data-dir /data -bootstrap-expect 1 -ui-dir /ui
+#     pull: missing
+#     detach: yes
+#     ports: 8500:8500
+#     expose: 8500
+#     restart_policy: always
+#     restart_policy_retry: 0
+#     state: started
+#   when: type == "manager"
 
-- name: Run swarm manager container
-  docker:
-    name: manager
-    image: hyperiot/rpi-swarm
-    command: "manage -H tcp://0.0.0.0:4000 --advertise {{hostname}}.local:4000 consul://10.0.1.1:8500"
-    pull: missing
-    detach: yes
-    ports: 4000:4000
-    expose: 4000
-    restart_policy: always
-    restart_policy_retry: 0
-    state: started
-  when: type == "manager"
+# - name: Run swarm manager container
+#   docker:
+#     name: manager
+#     image: hyperiot/rpi-swarm
+#     command: "manage -H tcp://0.0.0.0:4000 --advertise {{hostname}}.local:4000 consul://10.0.1.1:8500"
+#     pull: missing
+#     detach: yes
+#     ports: 4000:4000
+#     expose: 4000
+#     restart_policy: always
+#     restart_policy_retry: 0
+#     state: started
+#   when: type == "manager"
 
 # - name: Run swarm nodes
 #   docker:

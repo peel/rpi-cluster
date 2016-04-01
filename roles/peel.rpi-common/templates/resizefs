@@ -3,8 +3,8 @@
 # from: http://forum.odroid.com/viewtopic.php?f=52&t=2948
 
 fdisk_first() {
-		p2_start=`fdisk -l /dev/mmcblk0 | grep mmcblk0p2 | awk '{print $2}'`
-		echo "Found the start point of mmcblk0p2: $p2_start"
+		p2_start=`fdisk -l /dev/mmcblk0 | grep mmcblk0p{{root_partition_id}} | awk '{print $2}'`
+		echo "Found the start point of mmcblk0p{{root_partition_id}}: $p2_start"
 		fdisk /dev/mmcblk0 << __EOF__ >> /dev/null
 d
 2
@@ -25,7 +25,7 @@ __EOF__
  
 resize_fs() {
 	echo "Activating the new size"
-	resize2fs /dev/mmcblk0p2 >> /dev/null
+	resize2fs /dev/mmcblk0p{{root_partition_id}} >> /dev/null
 	echo "Done!"
 	echo "Enjoy your new space!"
 	rm -rf /root/.resize

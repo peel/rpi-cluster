@@ -5,8 +5,11 @@ gate1.local
 hell1.local
 hell2.local 
 hell3.local 
+
+[odroids]
 hell4.local 
 hell5.local 
 
-[pis:vars]
-ansible_ssh_user=alarm
+[nodes:children]
+pis
+odroids
