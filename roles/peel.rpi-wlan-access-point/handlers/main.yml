@@ -1,4 +1,7 @@
 ---
+- name: restart wifi-hostapd
+  service: name=wifi-hostapd state=restarted enabled=yes
+
 - name: restart rsyslogd
   service: name=rsyslog state=restarted enabled=yes
 

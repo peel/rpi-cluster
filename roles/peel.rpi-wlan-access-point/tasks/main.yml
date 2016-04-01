@@ -23,7 +23,7 @@
 - command: chdir=/tmp tar xzfv hostapd.tar.gz creates=/tmp/RTL8188-hostapd-2.0
 - shell: chdir=/tmp/RTL8188-hostapd-2.0/hostapd make creates=/usr/local/bin/hostapd
   become_user: root
-- copy: remote_src=true src=/usr/local/bin/{{item}} dest=/usr/bin/{{item}} owner=root group=root mode=0755
+- copy: remote_src=true src=/tmp/RTL8188-hostapd-2.0/hostapd/{{item}} dest=/usr/bin/{{item}} owner=root group=root mode=0755
   with_items:
     - hostapd
     - hostapd_cli
@@ -43,12 +43,14 @@
     dest: "{{ item.dest }}"
     mode: 0644
   with_items:
-    - { template: dnsmasq.conf.j2, dest: /etc/dnsmasq.d/dnsmasq.conf }
+    - { template: wifi-hostapd.service.j2, dest: /lib/systemd/system/wifi-hostapd.service }
+    - { template: dnsmasq.conf.j2, dest: /etc/dnsmasq.conf }
     - { template: hostapd.conf.j2, dest: /etc/hostapd/hostapd.conf }
     - { template: hostapd.j2, dest: /etc/default/hostapd }
-    - { template: iptables.j2, dest: /etc/iptables/rules.v4 }
+    - { template: iptables.j2, dest: /etc/iptables/iptables.rules }
     - { template: nat.conf.j2, dest: /etc/sysctl.d/nat.conf }
   notify:
+    - restart wifi-hostapd
     - restart hostapd
     - restart dnsmasq 
     - delete dhcp leases
@@ -69,6 +71,9 @@
     - hostapd.conf
     - iptables.conf
   notify: restart rsyslogd
+
+- name: start wifi-hostapd 
+  service: name=wifi-hostapd state=started enabled=yes
 
 - name: start dnsmasq 
   service: name=dnsmasq state=started enabled=yes

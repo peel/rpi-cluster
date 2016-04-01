@@ -1,0 +1,14 @@
+[Unit]
+Description=Add static ip for wireless
+Before=hostapd.service
+Wants=network.target
+Before=network.target
+BindsTo=sys-subsystem-net-devices-{{host_interface}}.device
+After=sys-subsystem-net-devices-{{host_interface}}.device
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/ip addr add 10.0.1.1/24 dev {{host_interface}} brd + dev {{host_interface}}
+
+[Install]
+WantedBy=multi-user.target
