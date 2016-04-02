@@ -13,3 +13,7 @@ hell5.local
 [nodes:children]
 pis
 odroids
+
+[all:children]
+nodes
+managers

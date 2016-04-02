@@ -13,3 +13,7 @@
 [nodes:children]
 pis
 odroids
+
+[all:children]
+nodes
+managers

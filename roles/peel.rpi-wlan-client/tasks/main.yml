@@ -29,7 +29,10 @@
 
 - name: Prevent Wifi from sleeping
   command: iw dev {{client_interface}} set power_save off
-  when: ansible_os_family == "Debian"
+
+# TODO: RPiB only
+# - name: Prevent Wifi from sleeping
+#   template: src=8192cu.conf.j2 dest=/etc/modprobe.d/8192cu.conf owner=root group=root
 
 - name: Connect to Wifi automatically
   service: name=netctl-auto@{{client_interface}} state=started enabled=yes
