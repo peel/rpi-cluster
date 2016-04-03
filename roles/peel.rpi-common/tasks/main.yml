@@ -1,5 +1,5 @@
 ---
-- name: Configure ssh keys for root user
+- name: Configure ssh keys for users
   authorized_key: user={{item}} key=https://github.com/{{github_user}}.keys
   with_items:
     - "{{ansible_user_id}}"
@@ -52,5 +52,6 @@
 - name: Install dev packages
   package: name={{item}} state=present
   with_items:
+    - sudo
     - git
     - make
