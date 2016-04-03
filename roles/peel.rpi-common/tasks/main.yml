@@ -45,3 +45,9 @@
     mode: 0644
   with_items:
     - { template: resolv.conf.j2, dest: /etc/resolv.conf }
+
+- name: Install dev packages
+  package: name={{item}} state=present
+  with_items:
+    - git
+    - make
