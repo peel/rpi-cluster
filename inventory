@@ -1,14 +1,14 @@
 [managers]
-192.168.0.22
+gate1.local
 
 [pis]
-192.168.0.23
-192.168.0.24
-192.168.0.25
+hell1.local
+hell2.local 
+hell3.local 
 
 [odroids]
-192.168.0.32
-192.168.0.33
+hell4.local 
+hell5.local 
 
 [nodes:children]
 pis
