@@ -23,3 +23,15 @@ Install python and wireless_tools (pacman -Syu --noconfirm && pacman -S python2 
 **** Access Point nodes: =ansible-playbook -k -i inventory access_point.yml --ask-vault-pass=
 **** Cluster nodes: =ansible-playbook -k -i inventory cluster.yml --ask-vault-pass=
 *** reboot Raspberries =ansible pis -i inventory -a "shutdown -r now" -s=
+** TODOS
+*** TODO Add OLED diplay config to manager
+Install pip2
+Install pip2 packages
+#+BEGIN_SRC
+pip2 install wiringpi spidev gaugette
+#+END_SRC
+Clone scripts
+https://github.com/guyc/py-gaugette.git
+Connect OLED (see above)
+Run scripts from samples/
+
